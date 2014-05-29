@@ -1,0 +1,598 @@
+\documentclass{beamer}
+\usepackage{etex}
+\usetheme{default}
+\usecolortheme{seagull}
+\usefonttheme{structurebold}
+\usenavigationsymbolstemplate{}
+
+\definecolor{paprika}{rgb}{0.6,0,0.2}
+\definecolor{pineglade}{rgb}{0.95,0.95,0.75}
+
+\setbeamercolor{structure}{fg=paprika}
+\setbeamercolor{block title}{fg=paprika,bg=pineglade}
+\setbeamercolor{alerted text}{fg=paprika}
+\setbeamercolor{block body}{bg=pineglade}
+\setbeamertemplate{title page}
+{%
+   \begin{center}
+      \begin{minipage}{0.9\textwidth}
+         \begin{block}{}
+            \begin{center}
+               \Large{\alert{\inserttitle}}\\
+               \vspace{0.5cm}
+               \large{\insertauthor}\\
+               \large{\texttt{melissa.mendonca@ufsc.br}}
+            \end{center}
+         \end{block}
+      \end{minipage}
+   \end{center}
+}
+
+\usepackage[portuguese]{babel}
+\usepackage[utf8]{inputenc} % To use characters such as é without typing é
+\usepackage{ctable} % provides \toprule,\bottomrule,\midrule for tables
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows, decorations.markings}
+% for double arrows a la chef
+\tikzstyle{vecArrow} = [thick, paprika, decoration={markings,mark=at position
+   1 with {\arrow[semithick,paprika]{open triangle 60}}},
+   double distance=1.4pt, shorten >= 5.5pt,
+   preaction = {decorate},
+   postaction = {draw,line width=1.4pt, pineglade,shorten >= 4.5pt}]
+% Define box and box title style
+\tikzstyle{mybox} = [draw, very thick, rectangle,rounded corners, inner sep=10pt, inner ysep=20pt]
+
+\newcommand{\kw}[1]{\alert{\texttt{#1}}}
+\newcommand{\code}[1]{{\texttt{#1}}}
+\newcommand{\acode}[1]{\alert{\texttt{#1}}}
+\newcommand{\codigo}[1]{\begin{center}\rm{\code{
+  \begin{tabular}{r l}
+  #1
+  \end{tabular}
+  }}\end{center}}
+\newcommand{\ac}{\alert{\texttt{>>}}}
+\newcommand{\file}[3]{\texttt{
+   \begin{center}
+      \begin{tikzpicture}
+         \node[mybox] (box) {
+            \begin{minipage}{#1}
+               #3
+            \end{minipage}
+         };
+         \node[draw, fill=white, text=black, right=10pt, rounded corners] at (box.north west) {
+            \textbf{#2}
+         };
+      \end{tikzpicture}
+   \end{center}}
+}
+
+\title{MATLAB Avançado} 
+\author[M. Weber Mendonça]{Melissa Weber Mendonça}
+\institute[UFSC]{\inst{1} Universidade Federal de Santa Catarina} 
+\date{2014.1}
+
+\logo{\includegraphics[height=1.5cm]{/home/melissa/Documentos/latex/brasao_UFSC.png}}
+
+\begin{document}
+%%%
+% Slide 1
+\begin{frame}
+% Title
+  \titlepage
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Relembrando...}
+   \begin{itemize}
+      \item[\ac] \code{inteiro = \acode{fscanf}(arquivo,’\%d’)}
+   \end{itemize}
+   Repita o exercício da aula anterior (ler UM dado de um arquivo), agora com um número real:
+   \begin{itemize}
+      \item[\ac] \code{real = \acode{fscanf}(arquivo,’\%f’)}
+   \end{itemize}
+   e depois repita com um texto:
+   \begin{itemize}
+      \item[\ac] \code{texto = \acode{fscanf}(arquivo,’\%s’)}
+   \end{itemize}
+   \vfill
+   Tente colocar o formato errado e observe o erro produzido.
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Lista de dados}
+   Se quisermos ler uma lista de números inteiros, por exemplo, basta informar o \emph{padrão} dos dados. 
+
+   Exemplo: se no arquivo temos
+   \begin{center}
+      \code{1 2 3 4 5}
+   \end{center}
+   podemos usar o comando
+   \begin{center}
+      \code{v = \acode{fscanf}(arquivo,'\%d')}
+   \end{center}
+   \code{v} será um vetor \emph{coluna}. 
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+   \frametitle{Exercício}
+   Ler uma matriz 3$\times$3 de dados de um arquivo .txt
+   \begin{center}
+      \alert{Cuidado com a ordem dos dados!}
+   \end{center}
+
+   \file{0.4\textwidth}{matriz.txt}{\code{1 2 3\\4 5 6\\7 8 9}}
+
+   \begin{center}
+      \begin{tikzpicture}
+         \node[fill=pineglade] (caixa) {
+           \begin{minipage}{7cm}
+\begin{verbatim}
+arquivo = fopen('matriz.txt');
+A = fscanf(arquivo,'%f');
+fclose(arquivo);
+A
+\end{verbatim}
+           \end{minipage}
+        };
+      \end{tikzpicture}
+   \end{center}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+   \frametitle{Ler uma matriz}
+   Por padrão, o MATLAB lê os dados em um vetor. Se quisermos especificar o tamanho da saída dos dados, devemos acrescentar um argumento à função \acode{fscanf}:
+   \begin{center}
+      \code{A = \acode{fscanf}(arquivo,'\%f',[3 3])}
+   \end{center}
+   \begin{center}
+      \begin{tikzpicture}
+         \node[fill=pineglade] (caixa) {
+           \begin{minipage}{8cm}
+\begin{verbatim}
+arquivo = fopen('matriz.txt');
+A = fscanf(arquivo,'%f',[3 3]);
+fclose(arquivo);
+% A verdadeira matriz eh a transposta
+% da matriz que foi lida:
+A = A';
+A
+\end{verbatim}
+           \end{minipage}
+        };
+      \end{tikzpicture}
+   \end{center}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Ler uma matriz desconhecida}
+   Se não sabemos o tamanho da matriz que está no arquivo, não podemos informar seu formato. Mas podemos contar quantos elementos foram lidos do arquivo:
+   \begin{center}
+      \code{[A,contador] = \acode{fscanf}(arquivo,'\%d')}
+   \end{center}
+   % Para ler o conteúdo do arquivo sem interpretar os valores, podemos usar o comando
+   % \begin{center}
+   %    \code{\acode{type}('nome.txt')}
+   % \end{center}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{frame}
+%    \frametitle{Exercício}
+%    Ler uma matriz de tamanho desconhecido (mas quadrada), e retransformá-la em sua forma original.
+%    \vfill
+%    \file{0.4\textwidth}{matrixquadrada.txt}{\code{1 23 3 4 5 6 7\\
+% 4 5 6 68 4 6 3\\
+% 7 10 9 5 345 3 2\\
+% 2 4 4 7 5 3 2\\
+% 67 434 2 4 6 7 66\\
+% 3 65 8 43 11 4 0\\
+% 1 67 3 788 3 5 8}}
+% \end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{frame}[fragile]
+%    \frametitle{Exercício: resposta}
+%    \begin{center}
+%       \begin{minipage}{5cm}
+%          \begin{beamercolorbox}[sep=1em,wd=5cm]{block body}
+%             \begin{center}
+%                \code{lermatrizquadrada.m}
+%             \end{center}
+%          \end{beamercolorbox}
+%       \end{minipage}
+%    \end{center}
+% \end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Formatos avançados}
+   Suponha que temos no nosso arquivo também o nome do campo de dados:
+   \file{0.5\textwidth}{temperaturas.txt}{\vspace*{-0.3cm}\footnotesize{\code{
+      \begin{tabular}{r r r r}
+         Hora & 1, & Temperatura & 20.6\\
+         Hora & 3, & Temperatura & 21.2\\
+         Hora & 5, & Temperatura & 23.1\\
+         Hora & 6, & Temperatura & 24.5\\
+         Hora & 8, & Temperatura & 25.0\\
+         Hora & 9, & Temperatura & 25.2\\
+         Hora & 10, & Temperatura & 25.8
+      \end{tabular}\vspace*{-0.5cm}
+   }}}
+   Para ler apenas os números desta tabela, usamos o comando
+   \begin{center}
+      \code{A = \acode{fscanf}(arquivo,'Hora \%d, Temperatura \%f\textbackslash n',[2 7])}
+   \end{center}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Exemplo}
+   Se não conhecemos quantos dados estão na lista (mas sabemos que são 2 por linha), podemos especificar 
+   \begin{center}
+      \small{\code{A = \acode{fscanf}(arquivo,'Hora \%d, Temperatura \%f\textbackslash n',[2 Inf])}}
+   \end{center}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Exercício}
+   Dado um arquivo com a tabela abaixo de nomes e idades, calcule a média de idades deste grupo.
+   \begin{center}
+      \begin{tabular}{l l}
+         Antonio &12\\
+         Bruno &20\\
+         Caio &34\\
+         Danilo &21\\
+         Eder &45\\
+         Fernando &78\\
+         Gustavo &20
+      \end{tabular}
+   \end{center}
+   Dica: para não ler o texto, e ler apenas as idades, podemos \emph{pular} o campo de texto com o comando
+   \begin{center}
+      \code{idades = \acode{fscanf}(arquivo,'\%\alert{*}s \%d\textbackslash n')}
+   \end{center}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+   \frametitle{Exercícios: resposta}
+   \begin{center}
+      \begin{tikzpicture}
+         \node[fill=pineglade] (caixa) {
+           \begin{minipage}{10cm}
+\begin{verbatim}
+arquivo = fopen('tabela.txt');
+idades = fscanf(arquivo,'%*s %d\n');
+fclose(arquivo);
+% A funcao mean(vetor) calcula a media dos 
+% valores do vetor.
+media = mean(idades);
+disp(['A media de idades do grupo eh ' ...
+       num2str(media) ' anos.'])
+\end{verbatim}
+           \end{minipage}
+        };
+      \end{tikzpicture}
+   \end{center}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{\acode{xlsread}}
+
+   Para ler arquivos de planilha gerados pelo Microsoft Excel, usamos
+   \codigo{\ac & [dados,texto,resto] = \acode{xlsread}(arquivo)}
+   % reads data from the first worksheet in
+   %  the Microsoft Excel spreadsheet file named FILE and returns the numeric
+   %  data in array NUM. Optionally, returns the text fields in cell array
+   %  TXT, and the unprocessed data (numbers and text) in cell array RAW.
+   \vfill
+   Para ler os dados de uma planilha específica do arquivo, usamos
+   \codigo{\ac & [dados,texto,resto] = \acode{xlsread}(arquivo,planilha)}
+   \vfill
+   Em sistemas com o Microsoft Excel instalado, pode-se usar
+   \codigo{\ac & [dados,texto,resto] = \acode{xlsread}(arquivo,-1)}
+   para abrir uma janela do Excel e selecionar os dados a serem importados interativamente.
+ \end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{frame}
+%    \frametitle{\code{tblread}}
+
+%    O comando
+%    \codigo{\ac & [dados,var,casos] = \acode{tblread}(nomedoarquivo,separador)}
+%    lê os seguintes valores de um arquivo:
+%    \begin{itemize}
+%       \item \code{dados}: Matriz numérica com um valor para cada par variável-caso
+%       \item \code{var}: Matriz de texto contendo os nomes das variáveis na primeira linha do arquivo
+%       \item \code{casos}: Matriz de texto contendo os nomes dos casos na primeira coluna do arquivo
+%    \end{itemize}
+%    Os valores no arquivo devem estar separados pelo \code{separador} indicado.
+% \end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+  \frametitle{Escrita em arquivos: \code{save}}
+
+  Para salvarmos alguma variável em um arquivo, podemos usar o comando
+
+  \codigo{\ac & \acode{save}('arquivo.mat','variavel')}
+
+  Porém, este comando salva o arquivo no formato MAT, que é um formato próprio do MATLAB, ilegível para humanos. Assim, para salvarmos em um arquivo texto simples, acrescentamos a opção \code{'-ascii'}.
+  
+  Exemplo:
+    \codigo{\ac & dados = \acode{rand}(3,4);\\
+      \ac & \acode{save}('dadosout.txt','dados','-ascii')}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Escrita}
+   Para escrever em um arquivo existente, a sintaxe é similar, mas devemos avisar ao MATLAB que vamos escrever neste arquivo:
+   \codigo{\ac & arquivo = \acode{fopen}('info.txt',\acode{'w'})\\
+     \ac & \acode{fprintf}(arquivo,'\%d',1)\\
+     \ac & \acode{fclose}(arquivo)}
+
+   \alert{Obs.} As opções do comando \acode{fopen} são:
+   \codigo{\ac & arquivo = \acode{fopen}('info.txt',\acode{'r'})\\
+     \ac & arquivo = \acode{fopen}('info.txt',\acode{'w'})\\
+     \ac & arquivo = \acode{fopen}('info.txt',\acode{'a'})}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{frame}
+%    \frametitle{Exemplo}
+%    Escreva um vetor em um arquivo.
+%    \vfill
+%    \begin{center}
+%       \begin{minipage}{5cm}
+%          \begin{beamercolorbox}[sep=1em,wd=5cm]{block body}
+%             \begin{center}
+%                \code{escrevervetor.m}
+%             \end{center}
+%          \end{beamercolorbox}
+%       \end{minipage}
+%    \end{center}
+% \end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{frame}
+%    \frametitle{Exercício}
+%    Escreva uma matriz em um arquivo.
+%    \vfill
+%    \begin{center}
+%       \begin{minipage}{5cm}
+%          \begin{beamercolorbox}[sep=1em,wd=5cm]{block body}
+%             \begin{center}
+%                \code{escrevermatriz.m}
+%             \end{center}
+%          \end{beamercolorbox}
+%       \end{minipage}
+%    \end{center}
+% \end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{frame}
+%    \frametitle{Exercício}
+%    Escrever uma lista de textos armazenada em uma célula em um arquivo.
+%    \vfill
+%    \begin{center}
+%       \begin{minipage}{5cm}
+%          \begin{beamercolorbox}[sep=1em,wd=5cm]{block body}
+%             \begin{center}
+%                \code{escrevercelula.m}
+%             \end{center}
+%          \end{beamercolorbox}
+%       \end{minipage}
+%    \end{center}
+% \end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{frame}
+%    \frametitle{Extras}
+%    \begin{itemize}
+%       \item \acode{rewind}: posição do cursor
+%       \item Reescrever arquivos
+%    \end{itemize}
+% \end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+  \frametitle{}
+  \begin{center}
+    \alert{Métodos para Análise Estatística}
+  \end{center}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+  \frametitle{Média aritmética simples}
+
+  Podemos calcular o valor da média aritmética simples para um conjunto de números armazenados em um vetor \code{x} usando o comando 
+
+  \codigo{\ac & \acode{mean}(x)}
+
+  Para calcularmos a média aritmética simples \alert{de cada coluna} de uma matriz e armazenarmos essas médias em um vetor linha, podemos usar o comando
+
+  \codigo{\ac & \acode{mean}(matriz)}
+
+  Para calcularmos a média aritmética simples \alert{de cada linha} de uma matriz e armazenarmos o resultado em uma matriz coluna, usamos o comando
+
+  \codigo{\ac & \acode{mean}(matriz,2)}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{\code{trimmmean}}
+ 
+   O comando 
+   \codigo{\ac & m = \acode{trimmean}(X,pc)}
+
+   calcula a média excluindo os $k$ maiores e menores valores de um vetor \code{X}, em que 
+   \begin{equation*}
+      k = \frac{n*\frac{pc}{100}}{2}
+   \end{equation*} 
+   e onde $n$ é o número de valores em \code{X}.
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Mediana}
+
+   Para calcularmos a mediana de um conjunto de dados armazenados em um vetor, usamos o comando
+
+   \codigo{\ac & \acode{median}(x)}
+
+   Para calcularmos a mediana das colunas de uma matriz, e retornar as medianas em um vetor linha, usamos o comando
+
+   \codigo{\ac & \acode{median}(matriz)}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+  \frametitle{Desvio Padrão}
+
+  Existem duas definições para o desvio padrão:
+  \begin{center}
+    \begin{tikzpicture}
+      \node[fill=pineglade] (caixa) {
+        \begin{minipage}{5.5cm}
+          \vskip-.3cm
+          \begin{equation}
+            \label{eq:std1}
+            s = \left( \frac{1}{n-1} \sum_{i=1}^n (x_i-\overline{x})^2\right)^{\frac{1}{2}}
+          \end{equation}
+        \end{minipage}
+      };
+    \end{tikzpicture}\\
+    ou\\
+    \vskip.2cm
+    \begin{tikzpicture}
+      \node[fill=pineglade] (caixa) {
+        \begin{minipage}{5.5cm}
+          \vskip-.3cm
+          \begin{equation}
+            \label{eq:std2}
+            s = \left( \frac{1}{n} \sum_{i=1}^n (x_i-\overline{x})^2\right)^{\frac{1}{2}}
+          \end{equation}
+        \end{minipage}
+      };
+    \end{tikzpicture}
+  \end{center}
+onde
+\begin{equation*}
+  \overline{x} = \frac{1}{n} \sum_{i=1}^n x_i.
+\end{equation*}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+  \frametitle{Desvio Padrão}
+
+  Para calcularmos o desvio padrão usando a fórmula (1), usamos o comando
+
+  \codigo{\ac & \acode{std}(x)}
+
+  O resultado é a raiz quadrada da variância.
+
+  Se quisermos calcular um vetor linha contendo o desvio padrão calculado para cada coluna de uma matriz, usamos
+
+  \codigo{\ac & \acode{std}(matriz)}
+
+  Se quisermos calcular o desvio padrão dos elementos de um vetor usando a fórmula (2), usamos
+
+  \codigo{\ac & \acode{std}(x,1)}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+  \frametitle{Variância}
+
+  Para calcularmos a variância dos elementos de um vetor, usamos o comando
+  
+  \codigo{\ac & \acode{var}(x)}
+
+  Para calcularmos um vetor linha com as variâncias de cada coluna da matriz, usamos o comando
+
+  \codigo{\ac & \acode{var}(matriz)}
+
+  O comando \acode{var} normaliza os dados por $n-1$, se temos $n>1$ dados. Se desejamos normalizar por $n$, usamos o comando
+
+  \codigo{\ac & \acode{var}(x,1)}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Covariância}
+
+   Para calcularmos a matriz de covariância entre 2 variáveis de dados, usamos o comando
+
+   \codigo{\ac & \acode{cov}(X)}
+
+   Podemos ainda obter outras informações desta matriz:
+
+   \codigo{\ac & \acode{diag}(\acode{cov}(X))}
+
+   é o vetor de variâncias para cada coluna de dados (idem a \acode{var})
+
+   \codigo{\ac & \acode{sqrt}(\acode{diag}(\acode{cov}(X)))}
+   
+   é desvio padrão (idem a \acode{std}).
+
+   \code{X} pode ser um vetor ou uma matriz. Para uma matriz $m\times n$, a matriz de covariância é $n\times n$.
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Coeficientes de Correlação}
+
+   Se tivermos uma matriz em que cada coluna contém observações de uma variável, podemos calcular os coeficientes de correlação entre as variáveis desta matriz usando o comando
+
+   \codigo{\ac & R = \acode{corrcoef}(X)}
+
+   Os coeficientes vão de $-1$ (correlação negativa) até $1$ (correlação positiva). Valores próximos de $0$ indicam que não há correlação linear entre as variáveis.
+
+   Se também quisermos saber o \emph{p-value} de cada correlação, usamos o comando
+
+   \codigo{\ac & [R, P] = \acode{corrcoef}(X)}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Exemplo}
+
+   Calcular a matriz de correlação e os \emph{p-values} entre as colunas da matriz \code{X}:
+   \codigo{\ac & [R,P] = \acode{corrcoef}(X)}
+   Encontrar todos os índices da matriz de correlação para os quais o \emph{p-value} é menor que $0.05$:
+   \codigo{\ac & [i,j] = \acode{find}(p<0.05)}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Correlação (2)}
+
+   Para encontrarmos a matriz de correlação entre variáveis e seus respectivos \emph{p-values}, também podemos usar a função \acode{corr}, com mais opções:
+
+   \codigo{\ac & [RHO,PVAL] = \acode{corr}(X,Y,'nome',valor)}
+
+   Exemplos:
+
+   \begin{itemize}
+      \item[\ac] \code{[RHO,PVAL] = \acode{corr}(X,Y,'type','Pearson')}
+      \item[\ac] \code{[RHO,PVAL] = \acode{corr}(X,Y,'type','Kendall')}
+      \item[\ac] \code{[RHO,PVAL] = \acode{corr}(X,Y,'rows','all')}
+      \item[\ac] \code{[RHO,PVAL] = \acode{corr}(X,Y,'rows','complete')} : \alert{pula linhas com \code{NaN}!}
+   \end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Histograma}
+
+   Um histograma pode ser criado com o comando
+   \codigo{\ac & n = \acode{hist}(Y)}
+   em que o vetor \code{Y} é distribuido em 10 caixas igualmente espaçadas, e \code{n} é o número de elementos em cada caixa.
+   O comando
+   \codigo{\ac & n = \acode{hist}(Y,nbins)}
+   divide os dados em \code{nbins} caixas.
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+  \frametitle{Box Plot}
+
+  O comando
+  \codigo{\ac & \acode{boxplot}(X)}
+  cria um gráfico de caixas dos dados em \code{X}. Se \code{X} for uma matriz, existirá uma caixa por coluna; se \code{X} for um vetor, existirá apenas uma caixa.
+  \vfill
+  Em cada caixa:
+  \begin{itemize}
+     \item a marca central é a mediana;
+     \item os limites da caixa representam o $25^{\circ}$ e o $75^{\circ}$ percentil;
+     \item os marcadores externos sinalizam os pontos extremos dos dados (sem considerar \emph{outliers};
+     \item os \emph{outliers}, se existirem, serão marcados individualmente no gráfico.
+  \end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{frame}
+%    \frametitle{Box Plot (2)}
+%    \codigo{\ac & \acode{boxplot}(X,G)}
+%    especifica uma ou mais variáveis de agrupamento \code{G}, produzindo uma caixa separada para cada conjunto de valores em \code{X} no mesmo grupo.
+% \end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}

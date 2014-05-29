@@ -1,0 +1,419 @@
+\documentclass{beamer}
+\usepackage{etex}
+\usetheme{default}
+%\useinnertheme{rounded}
+\usecolortheme{seagull}
+\usefonttheme{structurebold}
+%\usefonttheme{professionalfonts}
+\usenavigationsymbolstemplate{}
+%\setbeamerfont{frametitle}{family=\bfseries}
+
+\definecolor{paprika}{rgb}{0.6,0,0.2}
+\definecolor{pineglade}{rgb}{0.95,0.95,0.75}
+
+\setbeamercolor{structure}{fg=paprika}
+\setbeamercolor{block title}{fg=paprika,bg=pineglade}
+\setbeamercolor{alerted text}{fg=paprika}
+\setbeamercolor{block body}{bg=pineglade}
+\setbeamertemplate{title page}
+{%
+   \begin{center}
+      \begin{minipage}{0.9\textwidth}
+         \begin{block}{}
+            \begin{center}
+               \Large{\alert{\inserttitle}}\\
+               \vspace{0.5cm}
+               \large{\insertauthor}\\
+               \large{\texttt{melissa.mendonca@ufsc.br}}
+            \end{center}
+         \end{block}
+      \end{minipage}
+   \end{center}
+}
+
+\usepackage[portuguese]{babel}
+%\usepackage{fourier}
+\usepackage[utf8]{inputenc} % To use characters such as é without typing é
+\usepackage{ctable} % provides \toprule,\bottomrule,\midrule for tables
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows, decorations.markings}
+% for double arrows a la chef
+\tikzstyle{vecArrow} = [thick, paprika, decoration={markings,mark=at position
+   1 with {\arrow[semithick,paprika]{open triangle 60}}},
+   double distance=1.4pt, shorten >= 5.5pt,
+   preaction = {decorate},
+   postaction = {draw,line width=1.4pt, pineglade,shorten >= 4.5pt}]
+% Define box and box title style
+\tikzstyle{mybox} = [draw, very thick, rectangle,rounded corners, inner sep=10pt, inner ysep=20pt]
+
+\newcommand{\kw}[1]{\alert{\texttt{#1}}}
+\newcommand{\code}[1]{{\texttt{#1}}}
+\newcommand{\acode}[1]{\alert{\texttt{#1}}}
+\newcommand{\codigo}[1]{\begin{center}\rm{\code{
+  \begin{tabular}{r l}
+  #1
+  \end{tabular}
+  }}\end{center}}
+\newcommand{\ac}{\alert{\texttt{>>}}}
+\newcommand{\file}[3]{\texttt{
+   \begin{center}
+      \begin{tikzpicture}
+         \node[mybox] (box) {
+            \begin{minipage}{#1}
+               #3
+            \end{minipage}
+         };
+         \node[draw, fill=white, text=black, right=10pt, rounded corners] at (box.north west) {
+            \textbf{#2}
+         };
+      \end{tikzpicture}
+   \end{center}}
+}
+
+\title{MATLAB Avançado} 
+\author[M. Weber Mendonça]{Melissa Weber Mendonça}
+\institute[UFSC]{\inst{1} Universidade Federal de Santa Catarina} 
+\date{2014.1}
+
+\logo{\includegraphics[height=1.5cm]{/home/melissa/Documentos/latex/brasao_UFSC.png}}
+
+\begin{document}
+%%%
+% Slide 1
+\begin{frame}
+% Title
+  \titlepage
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+  \frametitle{Estruturas}
+  Outra maneira de armazenar dados heterogêneos é usar \emph{estruturas}: cada estrutura é composta de campos que podem conter quaisquer tipos de dados (assim como as células), e que são referenciados por \emph{nome}. Para criarmos uma estrutura chamada \code{dados} com o campo chamado \code{Nome}, podemos usar diretamente a sintaxe\\
+  \vfill
+  \codigo{\ac & dados.Nome = 'Melissa'\\
+    \ac & dados.Sobrenome = 'Mendonca'}
+  ou
+  \codigo{\ac & dados = \acode{struct}('Nome', 'Melissa', ...\\
+    & \qquad 'Sobrenome', 'Mendonca')}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Exemplos de uso}
+   \codigo{\ac & dados = \acode{struct}('Nome', 'Melissa', ...\\
+     & \qquad 'Sobrenome', 'Mendonça')\\
+     \ac & dados(1)\\
+     \ac & dados(1).Nome\\
+     \ac & dados(2) = \acode{struct}('Nome', 'Fulano', ...\\
+     & \qquad 'Sobrenome', 'Beltrano')\\
+     \ac & dados(1)\\
+     \ac & dados(2)\\
+     \ac & dados.Nome\\
+     \ac & [nome1, nome2] = dados.Nome}
+
+   \textbf{Obs.} Para criarmos uma struct vazia, podemos usar o comando
+   \codigo{\ac & vazia = \acode{struct}([])}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Campos}
+   As structs possuem campos nomeados, o que pode tornar mais fácil acessar os dados armazenados nesse tipo de variável. Alguns comandos do MATLAB permitem fazer isso.
+
+   \begin{itemize}
+      \item<1-> O comando \code{\acode{fieldnames}(s)} permite recuperar em uma célula a lista dos nomes dos campos da struct \code{s}.
+      \item<2-> O comando \code{s = \acode{orderfields}(s1)} ordena os campos da struct \code{s1} de modo que a nova struct \code{s} tem os campos em ordem alfabética.
+      \item<3-> O comando \code{s = \acode{orderfields}(s1, s2)} ordena os campos da struct \code{s1} de forma que a nova struct \code{s} tenha os nomes dos campos na mesma ordem em que aparecem na struct \code{s2} (as structs \code{s1} e \code{s2} devem ter os mesmos campos).
+      \item<4-> O comando \code{s = \acode{orderfields}(s1, c)} ordena os campos em \code{s1} de forma que a nova struct \code{s} tenha campos na mesma ordem em que aparecem na célula \code{c} (a célula \code{c} deve conter apenas os nomes dos campos de \code{s1}, em qualquer ordem).
+   \end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Structs e células}
+
+   Podemos preencher uma struct usando um comando só, determinando os valores possíveis para cada campo através de células. Por exemplo, no caso anterior, poderíamos ter entrado o comando
+   \codigo{\ac & dados = \acode{struct}('Nome', \{'Melissa', 'Fulano'\}, ...\\
+     & \qquad 'Sobrenome', \{'Mendonça', 'Beltrano'\})}
+   para criar a mesma struct.
+
+   Se quisermos preencher vários campos com o mesmo valor, não precisamos nos repetir. Por exemplo, 
+   \codigo{\ac & dados = \acode{struct}('Nome', \{'Melissa', 'Fulano'\}, ...\\
+     & \qquad 'Sobrenome', \{'Mendonça', 'Beltrano'\}, ...\\
+     & \qquad 'Presentes', \{'sim'\})}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+  \frametitle{\acode{cell2struct}}
+  A função \acode{cell2struct} cria uma estrutura a partir dos dados contidos na célula:
+
+  Se Exemplo:
+  \codigo{\ac & tabela = \{'Melissa', 'Mendonça', 'sim';\\
+    & \qquad 'Fulano', 'Beltrano', 'sim'\}\\
+    \ac & campos = \{'Nome', 'Sobrenome', 'Presente'\};\\
+    \ac & s = \acode{cell2struct}(tabela, campos, 2);\\
+    \ac & s(1)\\
+    \ac & s(2)}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{\acode{struct2cell}}
+   Por outro lado, o comando
+   \codigo{\ac & célula = \acode{struct2cell}(\rm\emph{struct})}
+   cria uma célula a partir da estrutura \emph{struct}.
+   
+   Exemplo:
+   \codigo{\ac & celula = \acode{struct2cell}(s)}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+  \frametitle{}
+  \begin{center}
+    \alert{Funções}
+  \end{center}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Funções}
+   Na matemática, 
+	$$f(x) = y.$$
+	
+	Entrada: $x$
+	
+	Saída: $y$
+	
+	Ação: $f$.
+	
+	Exemplo: $f(x) = x^2$.
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Funções já prontas}
+   Exemplos:
+
+   \codigo{& n = \acode{input}('Entre com um numero:')\\
+      & nfat = \acode{factorial}(n)\\
+      & texto = \acode{num2str}(25)}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+  \frametitle{Funções}
+
+  No MATLAB, uma função é um arquivo \code{minhafuncao.m} com a sintaxe
+
+  \file{0.6\textwidth}{minhafuncao.m}{
+    \codigo{function &[y] = minhafuncao(x)\\
+      & \% Descricao da funcao\\
+      & comandos;
+    }}
+  
+  Uma vez construida a função, podemos chamá-la no console, usando
+  \codigo{\ac & y = minhafuncao(x)}
+
+  {\bf{Observação.}} Uma função deve sempre ter o mesmo nome que\\ o arquivo no qual ela está salva.
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+  \frametitle{Exemplo}
+  Construir uma função que calcule a média dos 3 elementos de um vetor $x$.
+
+  \file{0.8\textwidth}{media.m}{
+    \codigo{function &[y] = media(x)\\
+      & y = (x(1) + x(2) + x(3))/3;}}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Qual a diferença entre um \emph{script} e uma \emph{função}?}
+   Um \emph{script} é um arquivo que contém uma sequência de comandos, mas não exige entrada ou saída.
+   
+   Uma função deve, obrigatoriamente, ter pelo menos uma entrada e uma saída.
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Argumentos de entrada e saída}
+   Se tivermos mais de um argumento de entrada, basta separá-los por vírgulas:
+   
+   \codigo{&s = \acode{soma}(x,y)}
+   
+   Se tivermos mais de um argumento de saída, precisamos escrevê-los entre colchetes:
+   
+   \codigo{[a,b] = \acode{somaesubtracao}(x,y)}
+
+   Se quisermos aplicar a mesma função a um conjunto de valores, basta colocarmos os valores em um vetor:
+   
+   \codigo{&m = \acode{f}([-2 1 3])}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Funções com número variável de argumentos}
+   \begin{itemize}
+      \item O comando \acode{nargin}, executado dentro do corpo de uma função, retorna o número de argumentos de entrada para o qual a função está definida.
+      \item O comando \acode{nargin(f)}, em que \code{f} é uma função, retorna o número de argumentos de entrada da função \code{f}, e pode ser executado fora da função (inclusive no console).
+      \item O comando \acode{nargout}, executado dentro do corpo de uma função, retorna o número de argumentos de saída para o qual a função está definida.
+      \item O comando \acode{nargin(f)}, em que \code{f} é uma função, retorna o número de argumentos de saída da função \code{f}, e pode ser executado fora da função (inclusive no console).
+   \end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Funções com número variável de argumentos}
+   \acode{varargin} é uma variável de entrada que permite que a função receba qualquer número de argumentos de entrada.
+   
+   Exemplo:
+   \file{0.8\textwidth}{somas.m}{\begin{tabular}{ll}function [y] = somas(x,varargin)\\
+        \qquad if nargin == 1\\
+        \qquad \quad disp('Nada a calcular.')\\
+        \qquad elseif nargin == 2\\
+        \qquad \quad y = x + varargin\{1\};\\
+        \qquad elseif nargin == 3\\
+        \qquad \quad y = x + varargin\{1\} + varargin\{2\};\\
+        \qquad else\\
+        \qquad \quad disp('Argumentos demais!')\\
+        \qquad end\end{tabular}}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Funções com número variável de argumentos}
+   \acode{varargout} é uma variável de saída que permite que a função devolva qualquer número de argumentos de saída.
+   
+   Exemplo:
+   \file{0.8\textwidth}{valores.m}{\begin{tabular}{l} function [f,varargout] = valores(x)\\
+        \qquad f = x\^{}2;\\
+        \qquad  if nargout == 2\\
+        \qquad  \quad varargout\{1\} = 2*x;\\
+        \qquad elseif nargout == 3\\
+        \qquad \quad varargout\{1\} = 2*x;\\
+        \qquad \quad varargout\{2\} = 2;\\
+        \qquad elseif nargout $>$ 3\\
+        \qquad \quad disp(['A função aceita até 3 ' ... \\
+        \qquad \quad \quad 'argumentos de saída.'])\\
+        \qquad end\end{tabular}}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+  \frametitle{Funções anônimas}
+
+  Para declarar uma função no console, sem ter que guardá-la em um arquivo, podemos usar o conceito de \emph{função anônima}. 
+
+  Exemplo:
+  \codigo{\ac & f = @(x) \acode{sin}(x)\\
+    \ac & x = pi;\\
+    \ac & f(x)}
+  
+  Exemplo:
+  \codigo{\ac & f = @(x) x-1;\\
+    \ac & \acode{min}(f([-2 1 0]))}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+  \frametitle{Funções anônimas com mais de uma variável}
+  Se quisermos criar uma função anônima com mais de uma variável, usamos 
+
+  \codigo{\ac & f = @(x,y,z,t) x+y+z+t}
+
+  Para retornarmos mais de um valor de uma função anônima, usamos o comando \emph{deal}:
+
+  \codigo{\ac & f = @(t,u,v) \acode{deal}(t+u+v,t-u+2*v)\\
+    \ac & [a,b] = f(1,2,3)}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+  \frametitle{Funções anônimas: Exemplo}
+
+  Pra que servem funções anônimas?
+
+   \codigo{\ac & x = -3:0.1:3;\\
+     \ac & f = @(x) x.\^{}2+3*x\\
+     \ac & \acode{plot}(x,f(x));
+   }
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+  \frametitle{}
+  \begin{center}
+    \alert{Manipulação de Arquivos e Tratamento de Dados}
+  \end{center}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Importar dados}
+   Para importarmos dados, o método mais fácil é utilizar a interface gráfica do MATLAB, selecionando 
+  
+   \begin{center}
+      File $\to$ Import Data
+   \end{center}
+
+   Para verificar os tipos de arquivo suportados e as funções disponíveis, consulte o Help.
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{\acode{importdata}}
+   Para importarmos dados de maneira automática, podemos usar o comando 
+   \codigo{\ac & \acode{importdata}\code{(arquivo, separador, ncabecalho)}}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+  \frametitle{Leitura de dados numéricos: \code{load}}
+  
+  Para lermos um arquivo com dados \alert{numéricos} chamado \code{dados.txt}, usamos o comando
+  
+  \codigo{\ac & \acode{load} dados.txt;}
+
+  Em seguida, na variável \code{dados} estarão contidos os valores obtidos do arquivo \code{dados.txt}. 
+
+  Se quisermos também podemos usar a sintaxe
+
+  \codigo{\ac & A = \acode{load}('dados.txt')}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Abrir e fechar um arquivo}
+   Para abrir um arquivo chamado \code{nome.txt}, usamos o comando
+   \begin{center}
+      \code{arquivo = \acode{fopen}('nome.txt')}
+   \end{center}
+   \vfill
+   Sempre que abrimos um arquivo, precisamos fechá-lo antes de sair do nosso programa. Para isso, usamos o comando
+   \begin{center}
+      \code{\acode{fclose}(arquivo)}
+   \end{center}   
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Comandos: leitura}
+   Para ler dados de um arquivo, precisamos indicar que tipo de informação estamos procurando. Isto é feito através dos \emph{formatos} abaixo:
+   \begin{itemize}
+      \item Números inteiros: \code{\%d} ou \code{\%u}
+      \item Números reais: \code{\%f} (notação decimal) ou \code{\%e} (notação científica)
+      \item Texto com espaços: \code{\%c}
+      \item Texto sem espaços: \code{\%s}
+      \item Nova linha: \code{\textbackslash n} (sinaliza o fim de uma linha de dados)
+   \end{itemize}
+
+   Para lermos dados de um arquivo em uma célula, usamos
+   \begin{center}
+      \code{C = \acode{textscan}(arquivo,'\%d')}
+   \end{center}
+   Para lermos dados de um arquivo em uma matriz, usamos
+   \begin{center}
+      \code{A = \acode{fscanf}(arquivo,'\%d')}
+   \end{center}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+   \frametitle{Exemplo}
+   \begin{itemize}
+      \item[1.] Crie um arquivo chamado
+      \begin{center}
+         \code{info.txt}
+      \end{center}
+      no mesmo diretório em que está salvando seus programas, com um número inteiro dentro.
+      \item[2.] No console, faça
+      \begin{itemize}
+         \item[\ac] \code{arquivo = \acode{fopen}('info.txt')}
+         \item[\ac] \code{a = \acode{fscanf}(arquivo,'\%d')}
+         \item[\ac] \code{\acode{fclose}(arquivo)}
+      \end{itemize}
+   \end{itemize}
+
+   Verifique que a variável \alert{\code{a}} vale o mesmo que seu inteiro no arquivo.
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
