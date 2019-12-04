@@ -3,7 +3,6 @@
 \usepackage[portuguese]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{hyperref}
-\usepackage{ctable}
 \usepackage{titlesec}
 \usepackage[all]{hypcap}
 \usepackage{geometry}
@@ -11,6 +10,7 @@
 \usepackage{tikz}
 % Define box and box title style
 \tikzstyle{mybox} = [draw, very thick, rectangle,rounded corners, inner sep=10pt, inner ysep=20pt]
+\usepackage{ctable}
 
 \oddsidemargin 20pt
 \textwidth 420pt
@@ -98,7 +98,7 @@
   \begin{tikzpicture}[remember picture, overlay]
     %\draw[step=1.0,black,thin] (0,0) grid (10,10);
 
-    \node at (0,-17) {\includegraphics[width=18cm]{peaks.png}};
+    \node at (0,-17) {\includegraphics[width=18cm]{img/peaks.png}};
     \node at (2.4,-5.5) {\begin{minipage}{0.5\textwidth} \textbf{{\fontsize{50}{60}\selectfont MATLAB}}\\\fontsize{40}{50}\selectfont AVANÇADO\end{minipage}};
     \draw[rectangle, fill] (-3,-3) -- (10.75,-3) -- (10.75,-2.9) -- (-3,-2.9);
     \draw[rectangle, fill] (-3,-7.5) -- (10.75,-7.5) -- (10.75,-7.55) -- (-3,-7.55);
@@ -122,9 +122,9 @@
 Vamos rever alguns conceitos básicos para a programação em MATLAB.
 
 \begin{center}
-  \begin{figure}[!h]
+  \begin{figure}[!ht]
   \begin{tikzpicture}
-    \node[anchor=south west,inner sep=0] at (0,0) {\includegraphics[width=0.6\textwidth]{matlab.png}};
+    \node[anchor=south west,inner sep=0] at (0,0) {\includegraphics[width=0.6\textwidth]{img/matlab.png}};
     \node at (5,3) {Console};
     \node[text width=2cm] (ws) at (10.3,3.6) {Espaço de trabalho};
     \node (arq) at (-1,3) {Arquivos};
@@ -1703,7 +1703,7 @@ Em cada caixa:
 \section{Fitting}
 Queremos descobrir uma função (linear, polinomial ou não-linear) que aproxime um conjunto de dados:
 \begin{center}
-  \includegraphics[width=6cm]{fit.png}
+  \includegraphics[width=6cm]{img/fit.png}
 \end{center}
 
 \subsection{Regressão}
@@ -1978,7 +1978,7 @@ Exemplo:
       >> & roots(p)}
    \begin{figure}
       \begin{center}
-         \includegraphics[width=6cm]{polinomio.png}
+         \includegraphics[width=6cm]{img/polinomio.png}
          \label{fig:polinomio}
          \caption{$p(x) = t^3+2t^2-5t-6$ e suas raizes.}
       \end{center}

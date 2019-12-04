@@ -21,7 +21,8 @@
       \begin{minipage}{0.9\textwidth}
          \begin{block}{}
             \begin{center}
-               \Large{\alert{\inserttitle}}\\
+              \Large{\alert{\inserttitle}}\\
+              \large{\alert{\insertsubtitle}}\\
                \vspace{0.5cm}
                \large{\insertauthor}\\
                \large{\texttt{melissa.mendonca@ufsc.br}}
@@ -34,7 +35,6 @@
 \usepackage[portuguese]{babel}
 %\usepackage{fourier}
 \usepackage[utf8]{inputenc} % To use characters such as é without typing é
-\usepackage{ctable} % provides \toprule,\bottomrule,\midrule for tables
 \usepackage{tikz}
 \usetikzlibrary{positioning}
 \usetikzlibrary{arrows, decorations.markings}
@@ -46,6 +46,7 @@
    postaction = {draw,line width=1.4pt, pineglade,shorten >= 4.5pt}]
 % Define box and box title style
 \tikzstyle{mybox} = [draw, very thick, rectangle,rounded corners, inner sep=10pt, inner ysep=20pt]
+\usepackage{ctable} % provides \toprule,\bottomrule,\midrule for tables
 
 \newcommand{\kw}[1]{\alert{\texttt{#1}}}
 \newcommand{\code}[1]{{\texttt{#1}}}
@@ -71,12 +72,13 @@
    \end{center}
 }
 
-\title{MATLAB Avançado} 
+\title{MATLAB Avançado}
+\subtitle{Aula 1}
 \author[M. Weber Mendonça]{Melissa Weber Mendonça}
 \institute[UFSC]{\inst{1} Universidade Federal de Santa Catarina} 
 \date{2014.1}
 
-\logo{\includegraphics[height=1.5cm]{/home/melissa/Documentos/latex/brasao_UFSC.png}}
+\logo{\includegraphics[height=1.5cm]{img/brasao_UFSC.png}}
 
 \begin{document}
 %%%
@@ -91,7 +93,7 @@
    \begin{center}
       Linguagem computacional de alto nível e um ambiente interativo para computação numérica, visualização e programação.
       \vskip.5cm
-      \includegraphics[width=8cm]{matlab.png}
+      \includegraphics[width=8cm]{img/matlab.png}
    \end{center}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -99,7 +101,7 @@
   \frametitle{Console: Modo Interativo}
   \begin{center}
     \begin{tikzpicture}
-      \node (console) at (0,0) {\includegraphics[width=0.6\textwidth]{console.png}};
+      \node (console) at (0,0) {\includegraphics[width=0.6\textwidth]{img/console.png}};
       \node (consoletext) at (0,0) {\alert{Console}};
       \node[right=0.3cm of console, text width=1.7cm] (workspace) {Espaço de trabalho};
       \node[left=0.3cm of console] (files) {Arquivos};
